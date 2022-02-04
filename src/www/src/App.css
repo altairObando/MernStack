@@ -1,11 +1,19 @@
 @import '~antd/dist/antd.css';
 
-#components-layout-demo-side .logo {
+.logo {
   height: 32px;
   margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(20, 179, 241, 0.3);
 }
-
 .site-layout .site-layout-background {
   background: #fff;
+}
+
+.custom-sider {
+  overflow: 'auto';
+  height: '100vh';
+  position: 'fixed';
+  left: 0;
+  top: 0;
+  bottom: 0;
 }

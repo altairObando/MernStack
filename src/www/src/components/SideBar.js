@@ -1,21 +1,22 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Layout, Menu } from 'antd';
+import { Outlet, Link } from "react-router-dom";
 import { PieChartOutlined, DesktopOutlined, UserOutlined, TeamOutlined, FileOutlined } from '@ant-design/icons'
+
+
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
-
-
 const SideBar = (props) => {
     const { collapsibleElement } = props;
-  return <Sider collapsible collapsed={ collapsibleElement.collapsed } onCollapse={ collapsibleElement.onCollapse }  >
+  return <Sider collapsible collapsed={ collapsibleElement.collapsed } onCollapse={ collapsibleElement.onCollapse } className="custom-sider"  >
   <div className="logo" />
-  <Menu defaultSelectedKeys={['1']} mode='inline'>
+  <Menu defaultSelectedKeys={['1']} mode='inline' theme='light'>
     <Menu.Item key="1" icon={<PieChartOutlined />}>
-      Option 1
+      <Link to='/Contacts' className='nav-text'>Contacts</Link>
     </Menu.Item>
-    <Menu.Item key="1" icon={<DesktopOutlined />}>
-      Option 1
+    <Menu.Item key="2" icon={<DesktopOutlined />}>
+      Option 2
     </Menu.Item>
     <SubMenu key="sub1" icon={<UserOutlined />} title="User">
         <Menu.Item key="3">Tom</Menu.Item>
@@ -29,8 +30,8 @@ const SideBar = (props) => {
     <Menu.Item key="9" icon={<FileOutlined />}>
         Files
     </Menu.Item>
-
   </Menu>
+  <Outlet />
 </Sider>
 };
 
