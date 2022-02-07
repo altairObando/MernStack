@@ -1,15 +1,20 @@
 import React from 'react'
-import { Table } from 'antd';
+import { Table, Empty  } from 'antd';
 import RowContactDef from './RowContactDefinition';
-import data from './MOCK_DATA.json'
+import data from '../../schemas/Contacts/MOCK_DATA.json'
+
 
 const ListContacts = () => {
     const handleDelete = (recod) => console.log(recod)
     const colDef = RowContactDef( handleDelete, null );
     return (
-        <div>
-            <Table columns={colDef} dataSource={data} />
-        </div>
+        <>
+           {
+               data.length > 1 ?  
+               <Table columns={colDef} dataSource={data} rowKey="_Id" />
+               : <Empty />
+           }
+        </>
     )
 }
 

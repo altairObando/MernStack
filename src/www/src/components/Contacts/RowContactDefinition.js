@@ -1,20 +1,8 @@
-import { Popconfirm, Tag } from 'antd';
-
-const RowContactDef = (handleDelete, handleEdit) => {
-    const _handleDelete = (record) => {
-        if(typeof(handleDelete) === "function")
-            handleDelete(record);
-        else
-            console.table(record)
-    }
-
-    const _handleEdit = (record) => {
-        if(typeof(handleEdit) === "function")
-            handleEdit(record);
-        else
-            console.table(record)
-    }
-
+import { Button, Tag } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { EditOutlined } from '@ant-design/icons'
+const RowContactDef = () => {
+    const nav  = useNavigate();
     return [
         {
             "title": "Identificación",
@@ -84,17 +72,13 @@ const RowContactDef = (handleDelete, handleEdit) => {
         {
             "title": "Actions",
             "dataIndex": "Actions",
-            "key":  Math.random() * 0.33,
-            "render": (_, record) => {
-                return <>
-                    <Popconfirm title="Sure to delete?" onConfirm={ () => _handleDelete(record) }>
-                        <a>Delete</a>
-                    </Popconfirm> | { " " }
-                    <Popconfirm title="Sure to edit?" onConfirm={ () => _handleEdit(record) }>
-                        <a>Edit</a>
-                    </Popconfirm>
-                </>
-            }
+            "key":  "Actions",
+            "render": (_, record) => <Button 
+                icon={ <EditOutlined /> }
+                onClick={() => nav(`/Contacts/FormContact/${ record._Id }`) }
+                type='primary'>
+                See
+            </Button>
         }
     ]
 }
