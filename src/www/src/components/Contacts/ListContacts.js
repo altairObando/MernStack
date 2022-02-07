@@ -1,17 +1,29 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table, Empty  } from 'antd';
 import RowContactDef from './RowContactDefinition';
-import data from '../../schemas/Contacts/MOCK_DATA.json'
+// import data from '../../schemas/Contacts/MOCK_DATA.json'
 
 
-const ListContacts = () => {
-    const handleDelete = (recod) => console.log(recod)
-    const colDef = RowContactDef( handleDelete, null );
+const ListContacts = (props) => {
+    const { searchParams } = props | {};
+    const colDef = RowContactDef();
+    const [ contactData, setContactData ] = useState([]);
+    // Load contacts by SearchParams
+    const loadContacts = async() => {
+        const response = await fetch("/api/Contacts");
+        const data     = await response.json();
+        setContactData(data);
+    }
+
+    useEffect(() =>{
+        loadContacts();
+    }, [searchParams])
+
     return (
         <>
            {
-               data.length > 1 ?  
-               <Table columns={colDef} dataSource={data} rowKey="_Id" />
+               contactData.length > 0 ?  
+               <Table columns={colDef} dataSource={contactData } rowKey="_id" />
                : <Empty />
            }
         </>

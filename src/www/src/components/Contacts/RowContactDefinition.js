@@ -71,11 +71,11 @@ const RowContactDef = () => {
         },
         {
             "title": "Actions",
-            "dataIndex": "Actions",
+            "dataIndex": "_id",
             "key":  "Actions",
             "render": (_, record) => <Button 
                 icon={ <EditOutlined /> }
-                onClick={() => nav(`/Contacts/FormContact/${ record._Id }`) }
+                onClick={() => nav(`/Contacts/FormContact/${ record._id }`) }
                 type='primary'>
                 See
             </Button>

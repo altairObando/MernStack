@@ -4,10 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Row, Col, Form, Input, Card, DatePicker, Switch, Popconfirm, message, Button, Image } from 'antd'
 import { CloseOutlined, IdcardOutlined, MailOutlined, PhoneOutlined, RedoOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 import ContactSchema from '../../schemas/Contacts/ContactSchema.json';
-//TODO: Eliminar data temporal
-import MOCK_DATA from '../../schemas/Contacts/MOCK_DATA.json';
 
-const FormContacts = (props) => {
+const FormContacts = () => {
     let params = useParams();
     let navigation = useNavigate();
     const today = moment();
@@ -18,10 +16,11 @@ const FormContacts = (props) => {
     const [ visible, setVisible] = useState(false);
     const [ form ] = Form.useForm();
     const { id } = params;
-    const loadContactById = (id) =>{
+    const loadContactById = async (id) =>{
       setLoading(true);
       // Fetch data
-      let data = MOCK_DATA.find(c => c._Id === id);
+      let response = await fetch("/api/Contacts/" + id);
+      let data = await response.json();
       if(data && data != null){
         // changeLoading in callback.
         data.FechaIngreso    = moment(data.FechaIngreso);
@@ -34,12 +33,15 @@ const FormContacts = (props) => {
     }
     // Load Server Data
     useEffect(()=>{
-      loadContactById(id)
+      if(id && id != null)    
+        loadContactById(id)      
+      else
+        setLoading(false)
     }, [id]);
 
     const handleReset =() =>{
-      const { _Id } = contact;
-      ContactSchema._Id = _Id;
+      const { _id } = contact;
+      ContactSchema._id = _id;
       form.resetFields();
       form.setFieldsValue(ContactSchema);
     }
@@ -47,6 +49,38 @@ const FormContacts = (props) => {
       let { Activo} = contact;
       setContact({...contact, "Activo": !Activo});
       message.success("Updated Contact!");
+    }
+    const submitForm = () => {
+      form.validateFields();
+      const errors = Object.values(form.getFieldsError())
+      if(!errors.some(e => e === undefined)){
+        form.submit()
+      }      
+    }
+    const onFinish = async (values) =>{
+      const { _id : id } = values;
+      values.Activo = contact.Activo;
+      const settings = {
+        method: id && id != null ? "PUT": "POST",
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values)
+      }
+      const response = await fetch("/api/Contacts/" + id, settings);
+      const result = await response.json();
+      if(result.status === 200 ){
+        let msg = "";
+        if(result.updated)
+          msg = "The registry has been successfully updated."
+        if(result.created)
+          msg = "The record has been created successfully.";
+        message.success(msg);
+      }else{
+        message.error(" Errrorres OwO !!!");
+      }
+
     }
     
   return <>
@@ -58,7 +92,8 @@ const FormContacts = (props) => {
         form={ form }
         layout="vertical"
         initialValues={ contact } 
-        style={{ padding:10, marginTop:10 }} 
+        style={{ padding:10, marginTop:10 }}
+        onFinish={ onFinish } 
       >
         {/* ID */}
         <Row  gutter={16}>
@@ -66,7 +101,7 @@ const FormContacts = (props) => {
           <Col span={12}>
             <Form.Item 
               label="Contact ID"
-              name="_Id">
+              name="_id">
             <Input prefix={ <IdcardOutlined /> } placeholder="ID Card" disabled/>
             </Form.Item>
           </Col>
@@ -204,9 +239,13 @@ const FormContacts = (props) => {
                   Reset Form
               </Button>
             </Popconfirm> {"  "}
-            <Button icon={ <SaveOutlined /> } type="primary" >
+            <Popconfirm 
+              title="Are you sure to save changes?"
+              onConfirm={ submitForm }>
+              <Button icon={ <SaveOutlined /> } type="primary">
                 Save Changes
-            </Button>
+              </Button>
+            </Popconfirm>
           </Col>
         </Row>
       </Form>

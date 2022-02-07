@@ -9,9 +9,9 @@ const SearchContacts = (props) => {
         placement='right' 
         onClose={ onClose } 
         visible={ isVisible }>
-
-  </Drawer>
     <p>Aqui van los datos de la busqueda  mi carnal </p>
+  </Drawer>
+    
   </>;
 };
 
