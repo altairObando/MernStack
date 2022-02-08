@@ -7,10 +7,12 @@ import { useNavigate } from 'react-router-dom';
 
 const IndexContacts = () => {
     const [ visible, setVisible ] = useState(false);
+    const [ searchParams, setSearchParams ] = useState(false);
     const navi = useNavigate();
     const searchContacts = (record) =>{
         if(record){
-            //TODO: Implement Query
+            let clearRecord = Object.fromEntries(Object.entries(record).filter(([_, v]) => v != null && v != undefined));
+            setSearchParams(clearRecord)
         }
         setVisible(false);
     }
@@ -32,7 +34,7 @@ const IndexContacts = () => {
                 Search Contacts
             </Button>
         </Space>
-            <ListContacts />
+            <ListContacts searchParams={ searchParams }/>
             <SearchContacts  isVisible={ visible } onClose={ searchContacts } />
         </div>
     )

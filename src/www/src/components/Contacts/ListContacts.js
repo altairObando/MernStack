@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Empty  } from 'antd';
 import RowContactDef from './RowContactDefinition';
-// import data from '../../schemas/Contacts/MOCK_DATA.json'
 
 
 const ListContacts = (props) => {
-    const { searchParams } = props | {};
+    const { searchParams = { }} = props;
     const colDef = RowContactDef();
     const [ contactData, setContactData ] = useState([]);
     // Load contacts by SearchParams
     const loadContacts = async() => {
-        const response = await fetch("/api/Contacts");
+        let uri = "/api/Contacts";
+        if(searchParams && searchParams != null){
+            uri += (uri.indexOf('?') === -1 ? '?' : '&') + Object.keys(searchParams)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(searchParams[k]))
+            .join('&');
+        }
+        const response = await fetch(uri);
         const data     = await response.json();
         setContactData(data);
     }

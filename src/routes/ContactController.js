@@ -3,9 +3,40 @@ const express = require("express");
 const router = express.Router();
 const dbContact = require("../models/Contact");
 
-router.get("/", async (_, rs) =>{
-    const contacts = await dbContact.find();
-    rs.json(contacts);
+/**
+ * This method is common used for check if a query params from request
+ * has values to filter data to query
+ * @param {object} record Query params
+ * @returns true if has values to apply filters
+ * @author Noel Obando
+ */
+const hasQueryValues   = (record) => Object.keys(record).some(k => record[k] && record[k] != null && record[k] != '');
+/**
+ * Este método permite validar y generar un objeto listo para filtrar los datos de una consulta.
+ * @param {object} record Query Params
+ * @returns object with valid data
+ * @author Noel Obando
+ */
+const clearQueryValues = (record) => {
+    let newQueryObject = {};
+    Object.keys(record)
+            .filter( k => record[k] && record[k] != null && record[k] != '')
+            .forEach(key => {
+                newQueryObject[key] = record[key];
+            });
+    return newQueryObject;
+}
+
+router.get("/", async (request, rs) => {
+    if(!hasQueryValues(request.query)){
+        const contacts = await dbContact.find();
+        rs.json(contacts);
+        return;
+    }
+    const queryValues = clearQueryValues(request.query);
+    const queryResult = await dbContact.find(queryValues).collation({ locale: "en", strength: 2 })
+    return rs.json(queryResult);
+
 });
 
 router.get("/:id" , async(request, response) => {
@@ -25,7 +56,6 @@ router.put("/:id", async(request, response) => {
     const { params: { id } } = request;
     const { _Id : _id, Identificacion,Nombre,SNombre,Apellido,SApellido,FechaNacimiento,FechaIngreso,Telefono,Email,Activo } = request.body;
     const currentContact = { _id, Identificacion,Nombre,SNombre,Apellido,SApellido,FechaNacimiento,FechaIngreso,Telefono,Email,Activo };
-    console.table(request.body);
     const result = await dbContact.findByIdAndUpdate(id, currentContact );
     return response.json({ status: 200, updated: true, data: result });
 });
@@ -33,7 +63,6 @@ router.put("/:id", async(request, response) => {
 router.delete("/:id", async(request, response) => {
     const { params: { id } } = request;
     const result = await dbContact.findByIdAndDelete(id);
-    console.log(result)
     return response.json({ status: 200, deleted: true, data : result });
 })
 
