@@ -4,24 +4,22 @@ import RowContactDef from './RowContactDefinition';
 
 
 const ListContacts = (props) => {
-    const { searchParams = { }} = props;
+    const { searchParams = {}} = props;
     const colDef = RowContactDef();
     const [ contactData, setContactData ] = useState([]);
     // Load contacts by SearchParams
-    const loadContacts = async() => {
+    useEffect( () =>{
         let uri = "/api/Contacts";
         if(searchParams && searchParams != null){
             uri += (uri.indexOf('?') === -1 ? '?' : '&') + Object.keys(searchParams)
             .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(searchParams[k]))
             .join('&');
         }
-        const response = await fetch(uri);
-        const data     = await response.json();
-        setContactData(data);
-    }
-
-    useEffect(() =>{
-        loadContacts();
+        fetch(uri).then(response => response.json())
+                  .then(data => {
+                    setContactData(data);
+                  })
+        
     }, [searchParams])
 
     return (

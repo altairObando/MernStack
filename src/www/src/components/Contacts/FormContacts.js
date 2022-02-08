@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Row, Col, Form, Input, Card, DatePicker, Switch, Popconfirm, message, Button, Image } from 'antd'
-import { CloseOutlined, IdcardOutlined, MailOutlined, PhoneOutlined, RedoOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
+import { Row, Col, Form, Input, Card, DatePicker, Switch, Popconfirm, message, Button } from 'antd'
+import { CloseOutlined, IdcardOutlined, MailOutlined, PhoneOutlined, RedoOutlined, SaveOutlined } from '@ant-design/icons';
 import ContactSchema from '../../schemas/Contacts/ContactSchema.json';
+import ImagesContact from './ImagesContact';
 
 const FormContacts = () => {
     let params = useParams();
@@ -13,7 +14,7 @@ const FormContacts = () => {
     ContactSchema.FechaNacimiento = today
     const [ loading, setLoading] = useState(true);
     const [ contact, setContact] = useState(ContactSchema);
-    const [ visible, setVisible] = useState(false);
+    
     const [ form ] = Form.useForm();
     const { id } = params;
 
@@ -275,23 +276,7 @@ const FormContacts = () => {
      <Col>
         <Row align='middle'>
           <Col style={{ textAlign: "center", paddingLeft: 100 }} offset={1} >
-                <h1>Digital Firms</h1>                
-                <Image
-                  preview={{ visible: false }}
-                  width={200}
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Firma_Len%C3%ADn_Moreno_Garc%C3%A9s.png/1200px-Firma_Len%C3%ADn_Moreno_Garc%C3%A9s.png"
-                  onClick={() => setVisible(true)}
-                />
-                <Button icon={ <UploadOutlined />} type='primary' >
-                  Upload New Image
-                </Button>
-                <div style={{ display: 'none'}} >
-                  <Image.PreviewGroup preview={{ visible, onVisibleChange: vis => setVisible(vis) }}>
-                    <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Firma_de_Agust%C3%ADn_Luque.svg/1200px-Firma_de_Agust%C3%ADn_Luque.svg.png" />
-                    <Image src="https://sobrehistoria.com//wp-content/uploads/2010/08/firmas-y-grafologia-600x431.jpg" />
-                    <Image src="https://upload.wikimedia.org/wikipedia/commons/6/69/Firma-Danilo-Medina.svg" />
-                  </Image.PreviewGroup>
-                </div>
+                <ImagesContact contactId={ contact._id } />
           </Col>
         </Row>
      </Col>

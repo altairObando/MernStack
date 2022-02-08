@@ -1,8 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan")
 const path = require("path");
 const cors = require("cors");
-const { mongoose } = require("./database/index");
+_ = require("./database/index");
 const app = express();
 const port = 5000;
 // Config
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(cors())
 // Routes
 app.use("/api/contacts", require("./routes/ContactController"));
+app.use("/api/files", require("./routes/UploadController"));
 // Static
 app.use(express.static(path.join(__dirname, "www/build")))
 

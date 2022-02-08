@@ -11,7 +11,7 @@ const IndexContacts = () => {
     const navi = useNavigate();
     const searchContacts = (record) =>{
         if(record){
-            let clearRecord = Object.fromEntries(Object.entries(record).filter(([_, v]) => v != null && v != undefined));
+            let clearRecord = Object.fromEntries(Object.entries(record).filter(([_, v]) => v != null && v !== undefined));
             setSearchParams(clearRecord)
         }
         setVisible(false);

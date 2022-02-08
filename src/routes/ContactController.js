@@ -2,7 +2,7 @@ const { response } = require("express");
 const express = require("express");
 const router = express.Router();
 const dbContact = require("../models/Contact");
-
+const dbContactUploads = require("../models/ContactUploads");
 /**
  * This method is common used for check if a query params from request
  * has values to filter data to query
@@ -66,6 +66,11 @@ router.delete("/:id", async(request, response) => {
     return response.json({ status: 200, deleted: true, data : result });
 })
 
+router.get("/uploads/:id", async(request, response) => {
+    const { params: { id } } = request;
+    const uploadedImages = await dbContactUploads.find({ contactId: id });
+    return response.json({ success: true, status: 200 , data: uploadedImages });
+})
 
 
 module.exports = router;
