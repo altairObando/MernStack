@@ -16,6 +16,12 @@ const FormContacts = () => {
     const [ visible, setVisible] = useState(false);
     const [ form ] = Form.useForm();
     const { id } = params;
+
+    /**
+     * Carga un contacto en base al parametro del object id 
+     * @param {object} id ObjectId
+     * @returns 
+     */
     const loadContactById = async (id) =>{
       setLoading(true);
       // Fetch data
@@ -39,17 +45,26 @@ const FormContacts = () => {
         setLoading(false)
     }, [id]);
 
+    /**
+     * Actua como reset para los formulario
+     */
     const handleReset =() =>{
       const { _id } = contact;
       ContactSchema._id = _id;
       form.resetFields();
       form.setFieldsValue(ContactSchema);
     }
+    /**
+     * Maneja los cambios del switch para estado del contacto
+     */
     const handleChangeStatus = ()=>{
       let { Activo} = contact;
       setContact({...contact, "Activo": !Activo});
       message.success("Updated Contact!");
     }
+    /**
+     * Ejecuta acciones previas al evento onFinish del formulario
+     */
     const submitForm = () => {
       form.validateFields();
       const errors = Object.values(form.getFieldsError())
@@ -57,13 +72,17 @@ const FormContacts = () => {
         form.submit()
       }      
     }
+    /**
+     * Ejecuta las acciones de POST/PUT según sea necesario 
+     * @param {object} values from record on form
+     */
     const onFinish = async (values) =>{
       const { _id : id } = values;
       values.Activo = contact.Activo;
       const settings = {
         method: id && id != null ? "PUT": "POST",
         headers: {
-          Accept: 'application/json',
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(values)
@@ -77,6 +96,8 @@ const FormContacts = () => {
         if(result.created)
           msg = "The record has been created successfully.";
         message.success(msg);
+        const{ data } = result;
+        navigation("/Contacts/FormContact/" + data._id);
       }else{
         message.error(" Errrorres OwO !!!");
       }
