@@ -13,6 +13,7 @@ const storage = new MGFS.GridFsStorage({
             const filename = `${Date.now()}-${sufix}-${file.originalname}`;
             return filename;
         }
+        
         return {
             bucketName: "photos",
             filename: `${Date.now()}-${sufix}-${file.originalname}`,

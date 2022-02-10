@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Button, Upload, Modal } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Image, Button, Upload, Modal, message } from 'antd';
+import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 
 const getBase64 = (file) =>{
     return new Promise((resolve, reject) => {
@@ -20,45 +20,86 @@ const MultimediaSchema = {
 
 const ImagesContact = (props) => {
     const { contactId } = props || "";
-    const [ multimediaValues, setMultimediaValues ] = useState(MultimediaSchema)
+    const [ uploadValues, setUploadValues ] = useState(MultimediaSchema)
+    const [ gallery, setGallery ] = useState([]);
 
-    const handleCancel = () => setMultimediaValues({...multimediaValues, "previewVisible": false })
+    const handleCancel = () => setUploadValues({...uploadValues, "previewVisible": false })
     const handlePreview = async file =>{
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setMultimediaValues({...multimediaValues, 
+        setUploadValues({...uploadValues, 
             previewImage: file.url || file.preview,
             previewVisible: true,
             previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
         });      
     }
-    const handleChange = ({ fileList }) => setMultimediaValues({...multimediaValues, "fileList": fileList });
+    const handleChange = ({ fileList }) => setUploadValues({...uploadValues, "fileList": fileList });
+    const handleDelete = fileId =>{
+        
+        let deleteUri = `/api/files/${fileId}`;
+        fetch(deleteUri, {
+            "method": "DELETE"
+        }).then(response => response.json())
+        .then(res => {
+            if(res.success){
+                message.success(res.message);
+                setGallery([]);
+                return;
+            }
+            message.warning(res.message);
+
+        })
+        .catch(err => console.table(err));
+    }
     useEffect(() => {
-        // if(contactId && contactId !== null){
-        //     fetch("api/files")
-        // }
-    }, [contactId])
+        if(contactId && contactId !== null){
+             fetch(`/api/files/gallery/${contactId}`)
+             .then(response => response.json())
+             .then(jsonResponse => {
+                 if(jsonResponse.success){
+                     setGallery(jsonResponse.filesWithUri || [])
+                     setUploadValues({...uploadValues, "fileList": [] })
+                 }else
+                    message.info("No digital firms found");
+             })
+        }
+    }, [contactId, uploadValues])
     return <>
-        <Upload
-            action={"/api/files/upload"}
-            data={{ contactId }}
-            listType="picture-card"
-            fileList={ multimediaValues.fileList }
-            onPreview={ handlePreview }
-            onChange={ handleChange }>
-            <Button icon={ <UploadOutlined /> }>
-                Add Image
-            </Button>
-        </Upload>
-        <Modal 
-            visible={ multimediaValues.previewVisible } 
-            title={ multimediaValues.previewTitle } 
-            footer={null}
-            onCancel={ handleCancel } >
-                
-                <Image alt='test-images' style={{ width: "100%" }} src={ multimediaValues.previewImage }  />
-        </Modal>
+        {
+            gallery && gallery.length > 0 ?
+            <Image.PreviewGroup>
+                {
+                    (gallery || []).map((srcImg, index)  =>  <div key={ index }>
+                        <Image src={srcImg.localUri} width={200} key={ srcImg._id } />
+                        <Button icon={ <DeleteOutlined /> } onClick={ () => handleDelete(srcImg.fileId) } key={index + 1}>Delete</Button>
+                    </div>  )
+                }       
+            </Image.PreviewGroup>
+            : <>
+                <Upload
+                action={"/api/files/upload"}
+                data={{ contactId }}
+                listType="picture-card"
+                fileList={ uploadValues.fileList }
+                onPreview={ handlePreview }
+                onChange={ handleChange }>
+                {
+                    uploadValues.fileList.length >= 1 ? null : 
+                    <Button icon={ <UploadOutlined /> }>
+                        Add Firm
+                    </Button>
+                }
+            </Upload>
+            <Modal 
+                visible={ uploadValues.previewVisible } 
+                title={ uploadValues.previewTitle } 
+                footer={null}
+                onCancel={ handleCancel } >                
+                    <Image alt='test-images' style={{ width: "100%" }} src={ uploadValues.previewImage }  />
+            </Modal>
+            </>
+        }
     </>
 };
 

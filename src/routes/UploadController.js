@@ -1,40 +1,52 @@
 const UploadMiddleWare = require("../middleware/uploads");
-const Grid = require("gridfs-stream");
 const express = require("express");
 const mongoose = require("mongoose");
 _ = require("../database/index");
+const fs = require("fs");
 const dbUploads = require("../models/ContactUploads");
 const router = express.Router();
 
-let gfs;
-
+let bucket;
 const conx = mongoose.connection;
 conx.once("open", () => {
-    gfs = Grid(conx.db, mongoose.mongo);
-    gfs.collection("photos");
+    bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: "photos"
+    });
 });
 
-// router.get("/:contactId", async(request, response) =>{
-//     gfs.files.find().toArray((err, files) =>{
-//         if(!files || files.length  === 0){
-//             return response.status(200).json({
-//                 success: false,
-//                 message: "Files not found"
-//             });
-//         }
-//         return response.json({
-//             success: true,
-//             files
-//         })
-//     })
-// })
+router.get("/gallery/:contactId", async(request, response) =>{
+    const data = await dbUploads.find({ contactId: request.params.contactId });
+    if(!data && data.length === 0){
+        return response.status(200).json({
+            success: false,
+            message: "No Images"
+        });
+    }
+    const filesWithUri = data.map( file => {
+        const localUri = `${process.env.HOST}/api/files/${file.fileName}`;
+        const newFile = { localUri, _id: file._id, contactId: file.contactId, fileName: file.fileName, fileId: file.fileId };
+        return newFile;
+    });
+    return response.json({ success: true, filesWithUri })
+})
 
 router.get("/:filename", async(req, res) => {
     try {
-        const file = await gfs.files.findOne({ filename: req.params.filename });
-        const readStream = gfs.files.createReadStream(file.filename);
-        readStream.pipe(res);
+        const files = await bucket.find({ filename: req.params.filename });
+        files.toArray((err, files) =>{
+            if(err){
+                return res.json(err);
+            }
+            if(!files || files.length === 0)
+                return res.status(400).json({
+                    success: false,
+                    message: "Image not found"
+                })
+            
+            bucket.openDownloadStreamByName(req.params.filename).pipe(res);
+        });
     } catch (error) {
+        console.log(error);
         res.send("not found");
     }
 })
@@ -43,20 +55,26 @@ router.post("/upload", UploadMiddleWare.single("file"), async(request, response,
     if (request.file === undefined) return response.send("you must select a file.");
     const imgUrl = `${process.env.HOST}:${process.env.PORT}/file/${request.file.filename}`;
     const { contactId } = request.body;
-    const file = await gfs.files.findOne({ filename: request.file.filename });
-    const newFile = new dbUploads({ contactId, fileId: file._id, fileName: request.file.filename });
-    await newFile.save();
+
+    const bucketFiles = await bucket.find({ filename: request.file.filename });
+    bucketFiles.toArray(async (err, file) =>{
+        const newFile = new dbUploads({ contactId, fileId: file[0]._id, fileName: request.file.filename });
+        await newFile.save();
+    });
     return response.send(imgUrl);
 });
 
 
-router.delete("/:filename", async (req, res) => {
+router.delete("/:fileId", async (req, res) => {
     try {
-        await gfs.files.deleteOne({ filename: req.params.filename });
-        res.send("success");
+        const id = new mongoose.Types.ObjectId( req.params.fileId );
+        await dbUploads.findOneAndDelete({ fileId: id });
+        await bucket.delete(id);
+
+        res.json({ message: "Deleted image ", success: true });
     } catch (error) {
         console.log(error);
-        res.send("An error occured.");
+        res.json({ message: "Cannot delete the image", success: false });
     }
 });
 
