@@ -11,18 +11,18 @@ const getBase64 = (file) =>{
     });
   }
 
-const MultimediaSchema = {
-    previewVisible: false,
-    previewImage: '',
-    previewTitle: '',
-    fileList: []
-}
-
 const ImagesContact = (props) => {
     const { contactId } = props || "";
+    const MultimediaSchema = {
+        previewVisible: false,
+        previewImage: '',
+        previewTitle: '',
+        fileList: [],
+        uploadCompleted: false
+    };
     const [ uploadValues, setUploadValues ] = useState(MultimediaSchema)
     const [ gallery, setGallery ] = useState([]);
-
+    
     const handleCancel = () => setUploadValues({...uploadValues, "previewVisible": false })
     const handlePreview = async file =>{
         if (!file.url && !file.preview) {
@@ -34,7 +34,14 @@ const ImagesContact = (props) => {
             previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
         });      
     }
-    const handleChange = ({ fileList }) => setUploadValues({...uploadValues, "fileList": fileList });
+    const handleChange = ({ file, fileList }) => {
+        if(file && file.status === "done"){
+            setUploadValues({...uploadValues, "fileList": fileList, uploadCompleted : true })
+            return;
+        }
+        setUploadValues({...uploadValues, "fileList": fileList });
+
+    };
     const handleDelete = fileId =>{
         
         let deleteUri = `/api/files/${fileId}`;
@@ -53,18 +60,24 @@ const ImagesContact = (props) => {
         .catch(err => console.table(err));
     }
     useEffect(() => {
-        if(contactId && contactId !== null){
+        if((contactId && contactId !== null) || uploadValues.uploadCompleted ){
              fetch(`/api/files/gallery/${contactId}`)
              .then(response => response.json())
              .then(jsonResponse => {
                  if(jsonResponse.success){
-                     setGallery(jsonResponse.filesWithUri || [])
-                     setUploadValues({...uploadValues, "fileList": [] })
+                     setGallery(jsonResponse.filesWithUri || []);
+                     setUploadValues({
+                        previewVisible: false,
+                        previewImage: '',
+                        previewTitle: '',
+                        fileList: [],
+                        uploadCompleted: false
+                    });
                  }else
                     message.info("No digital firms found");
              })
         }
-    }, [contactId, uploadValues])
+    }, [contactId, uploadValues.uploadCompleted ])
     return <>
         {
             gallery && gallery.length > 0 ?
@@ -81,9 +94,10 @@ const ImagesContact = (props) => {
                 action={"/api/files/upload"}
                 data={{ contactId }}
                 listType="picture-card"
-                fileList={ uploadValues.fileList }
+                fileList={ uploadValues.fileList || [] }
                 onPreview={ handlePreview }
-                onChange={ handleChange }>
+                onChange={ handleChange }
+                >
                 {
                     uploadValues.fileList.length >= 1 ? null : 
                     <Button icon={ <UploadOutlined /> }>
