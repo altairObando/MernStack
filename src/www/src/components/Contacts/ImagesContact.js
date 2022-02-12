@@ -22,7 +22,9 @@ const ImagesContact = (props) => {
     };
     const [ uploadValues, setUploadValues ] = useState(MultimediaSchema)
     const [ gallery, setGallery ] = useState([]);
+    const [ visible, setVisible ] = useState(false);
     
+
     const handleCancel = () => setUploadValues({...uploadValues, "previewVisible": false })
     const handlePreview = async file =>{
         if (!file.url && !file.preview) {
@@ -80,40 +82,48 @@ const ImagesContact = (props) => {
     }, [contactId, uploadValues.uploadCompleted ])
     return <>
         {
-            gallery && gallery.length > 0 ?
-            <Image.PreviewGroup>
-                {
-                    (gallery || []).map((srcImg, index)  =>  <div key={ index }>
-                        <Image src={srcImg.localUri} width={200} key={ srcImg._id } />
-                        <Button icon={ <DeleteOutlined /> } onClick={ () => handleDelete(srcImg.fileId) } key={index + 1}>Delete</Button>
-                    </div>  )
-                }       
-            </Image.PreviewGroup>
-            : <>
+            gallery && (gallery.length < 10 && gallery.length > 0) ? <>
+                <Image 
+                    preview={{ visible: false }}
+                    src={ gallery[0].localUri } 
+                    width={200}
+                    onClick={() => setVisible(true) }/>
                 <Upload
-                action={"/api/files/upload"}
-                data={{ contactId }}
-                listType="picture-card"
-                fileList={ uploadValues.fileList || [] }
-                onPreview={ handlePreview }
-                onChange={ handleChange }
-                >
-                {
-                    uploadValues.fileList.length >= 1 ? null : 
-                    <Button icon={ <UploadOutlined /> }>
-                        Add Firm
-                    </Button>
-                }
-            </Upload>
-            <Modal 
-                visible={ uploadValues.previewVisible } 
-                title={ uploadValues.previewTitle } 
-                footer={null}
-                onCancel={ handleCancel } >                
-                    <Image alt='test-images' style={{ width: "100%" }} src={ uploadValues.previewImage }  />
-            </Modal>
+                    action={"/api/files/upload"}
+                    data={{ contactId }}
+                    listType="picture-card"
+                    fileList={ uploadValues.fileList || [] }
+                    onPreview={ handlePreview }
+                    onChange={ handleChange }>
+                    {
+                        uploadValues.fileList.length >= 1 ? null : 
+                        <Button icon={ <UploadOutlined /> }>
+                            Add Firm
+                        </Button>
+                    }
+                </Upload>        
+                <div style={{ display: 'none' }}>
+                    <Image.PreviewGroup preview={{ visible, onVisibleChange: vis => setVisible(vis) }}>
+                    {
+                        (
+                            gallery || []).map((srcImg, index)  =>  <div key={ index }>
+                            <Image src={srcImg.localUri} key={ srcImg._id } />
+                            <Button icon={ <DeleteOutlined /> } onClick={ () => handleDelete(srcImg.fileId) } key={index + 1}>Delete</Button>
+                            </div>
+                        )
+                    }       
+                    </Image.PreviewGroup>
+                </div>
             </>
+            : null
         }
+        <Modal 
+            visible={ uploadValues.previewVisible } 
+            title={ uploadValues.previewTitle } 
+            footer={null}
+            onCancel={ handleCancel }>                
+                <Image alt='test-images' style={{ width: "100%" }} src={ uploadValues.previewImage }  />
+        </Modal>
     </>
 };
 
