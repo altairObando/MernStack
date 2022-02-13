@@ -1,7 +1,7 @@
 import React from 'react'
 import { Layout, Menu } from 'antd';
 import { Outlet, Link } from "react-router-dom";
-import { DesktopOutlined, UserOutlined, TeamOutlined, FileOutlined } from '@ant-design/icons'
+import { DesktopOutlined, UserOutlined, FileOutlined, ShopOutlined, SettingOutlined } from '@ant-design/icons'
 
 
 const { Sider } = Layout;
@@ -18,8 +18,10 @@ const SideBar = (props) => {
     <Menu.Item key="2" icon={<DesktopOutlined />}>
       Option 2
     </Menu.Item>
-    <SubMenu key="sub1" icon={<TeamOutlined />} title="Option 3">
-        <Menu.Item key="3">Sub 1</Menu.Item>
+    <SubMenu key="sub1" icon={<SettingOutlined />} title="Configuration">
+        <Menu.Item key="3" icon={ <ShopOutlined/> }>
+          <Link to="/Products" className='nav-text'>Products</Link>
+        </Menu.Item>
         <Menu.Item key="4">Sub 2</Menu.Item>
         <Menu.Item key="5">Sub 3</Menu.Item>
     </SubMenu>
