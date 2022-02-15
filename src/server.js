@@ -15,6 +15,7 @@ app.use(cors())
 // Routes
 app.use("/api/contacts", require("./routes/ContactController"));
 app.use("/api/files", require("./routes/UploadController"));
+app.use("/api/Products", require("./routes/ProductsController"));
 // Static
 app.use(express.static(path.join(__dirname, "www/build")))
 
