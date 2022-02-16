@@ -12,6 +12,9 @@ if(!window.validateGUID){
   }
 }
 
+window.BigInt.prototype.toJSON = function() { return this.toString()  }
+
+
 
 ReactDOM.render(
     <BrowserRouter>

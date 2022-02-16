@@ -1,33 +1,34 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Form, Input, InputNumber, message, Select } from 'antd'
-// Component Childs
+import { ProductContext } from './Context';
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-const FormProduct = (props) => {
-
+const FormProduct = () => {
+    const { form: formActions } = useContext(ProductContext);
     const children = [];
-    const { onOk, setSubmitForm: setFormDetail } = props || (() =>{})
+    // Fill with categories
     for (let i = 10; i < 36; i++) {
         children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
     }
     const [form] = Form.useForm();
+    
     const handleSubmitForm = () =>{
-        // form.validateFields();
-        // const errors = Object.values(form.getFieldsError())
-        // console.table(errors);
-
         form.validateFields()
         .then( values => {
-            // form.resetFields();
-            onOk(values);
+            formActions.onSubmitForm(values)
         })
         .catch(info => message.error(info));
     }
+
     useEffect(() =>{
-        setFormDetail(form);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setFormDetail])
+        form.resetFields();
+        form.setFieldsValue(formActions.record);
+    }, [form, formActions.record])
+
+    useEffect(() =>{
+        formActions.setFormDetail(form);
+    })
 
   return <Form name='basic-form-products'
   wrapperCol={{ span: 16 }}
@@ -68,9 +69,7 @@ const FormProduct = (props) => {
       <Select 
       mode='multiple'
       allowClear
-      style={{width: '100%'}}
-    //   onChange={(value) => console.log(value)}
-    >
+      style={{width: '100%'}}>
           { children }
       </Select>
   </FormItem>
