@@ -52,7 +52,6 @@ const ListColumnDefinition = () => {
                     list.showModalWithRecord(record);
                 }}
                 type='primary'>
-                See
             </Button>
             <Popconfirm title="Are you sure to delete this product?" onConfirm={ () => { list.delete(record._id ) }} >
                 <Button type='primary' style={{ backgroundColor: 'red', borderColor: 'red'}} icon={ <DeleteOutlined/>  } ></Button>
