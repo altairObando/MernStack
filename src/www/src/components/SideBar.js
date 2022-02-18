@@ -1,7 +1,7 @@
 import React from 'react'
 import { Layout, Menu } from 'antd';
 import { Outlet, Link } from "react-router-dom";
-import { DesktopOutlined, UserOutlined, FileOutlined, ShopOutlined, SettingOutlined } from '@ant-design/icons'
+import { DesktopOutlined, UserOutlined, FileOutlined, ShopOutlined, SettingOutlined, ToolOutlined } from '@ant-design/icons'
 
 
 const { Sider } = Layout;
@@ -22,7 +22,9 @@ const SideBar = (props) => {
         <Menu.Item key="3" icon={ <ShopOutlined/> }>
           <Link to="/Products" className='nav-text'>Products</Link>
         </Menu.Item>
-        <Menu.Item key="4">Sub 2</Menu.Item>
+        <Menu.Item key="4" icon={ <ToolOutlined/>} >
+          <Link to="/Catalogs" className='nav-text'>Catalogs</Link>
+        </Menu.Item>
         <Menu.Item key="5">Sub 3</Menu.Item>
     </SubMenu>
     <Menu.Item key="9" icon={<FileOutlined />}>

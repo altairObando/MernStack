@@ -8,6 +8,7 @@ import FormContacts   from './components/Contacts/FormContacts';
 import IndexHome      from './components/Home/IndexHome';
 import BuildBread     from './components/Home/BuildBread';
 import IndexProduct   from './components/Products/IndexProduct';
+import IndexCatalog   from './components/Catalogs/IndexCatalog';
 
 const { Header, Content, Footer } = Layout;
 
@@ -50,6 +51,7 @@ const App = () => {
               <Route path='/Contacts/FormContact/:id' element={ <FormContacts /> } />
 
               <Route path='/Products' element={ <IndexProduct />} />
+              <Route path='/Catalogs' element={ <IndexCatalog /> } />
             </Routes>
           </Content>
           <Footer style={{ textAlign: 'center' }}>
