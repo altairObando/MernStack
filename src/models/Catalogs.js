@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const CatalogSchema = new Schema({
     name: Schema.Types.String,
+    code: Schema.Types.String,
     description: Schema.Types.String,
     isActive: Schema.Types.Boolean,
     fields: [{

@@ -1,37 +1,55 @@
-import React, { useState } from 'react'
-import { Form, Input, Button, Space, Select, message, Switch } from 'antd';
+import React, { useContext, useState } from 'react'
+import { Form, Input, Button, Space, Select, message, Switch, Row, Col } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { contextCatalog } from './ContextCatalog';
 
 const { Option } = Select;
-const columnTypes = [
-  { name: "Text",   type: "textColumn" },
-  { name: "Check",  type: "checkboxColumn" },
-  { name: "Number", type: "intColumn" },
-  { name: "Decimal", type: "floatColumn" },
-  { name: "Date",    type: "dateColumn" },
-  { name: "Percent", type: "percentColumn" },
-];
 
-
-const EditorCatalog = () => {
+const EditorCatalog = (props) => {
   const [form] = Form.useForm();
   const [active, setActive] = useState(false);
+  const { values: { columnTypes } } = useContext(contextCatalog);
+  const { catalog: currentCatalog } = props;
   const onFinish = async(values) =>{
-    try{
-     
+    try{     
       form.validateFields();
       const errors = Object.values(form.getFieldsError())
       if(errors.some(e => e === undefined)){
         message.error("Campos requeridos sin validar");
       }  
-      else
-        console.log(values)
+      else{
+          const { _id : id } = values;
+          const settings = {
+            method: id && id != null ? "PUT": "POST",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(values)
+          }
+          const response = await fetch("/api/Catalogs/" + (id || ''), settings);
+          const result = await response.json();
+          if(result.status === 200 ){
+            let msg = "";
+            if(result.updated)
+              msg = "The registry has been successfully updated."
+            if(result.created)
+              msg = "The record has been created successfully.";
+            message.success(msg);
+          }else{
+            message.error(" Errrorres OwO !!!");
+          }
+      }
     }catch(e){
       console.table(e)
     }
   }
+
   return <>
-    <Form form={form} onFinish={ onFinish }>
+    <Form form={form} onFinish={ onFinish } initialValues={ currentCatalog }>
+      <Form.Item name="_id" label="Id" hidden>
+        <Input placeholder='Catalog Id'/>
+      </Form.Item>
       <Form.Item  rules={[{ required: true, message: "Please set the 'code' of catalog" }]} name="code" label="Code">
         <Input placeholder='Code: SVG-45785' />
       </Form.Item>
@@ -42,7 +60,7 @@ const EditorCatalog = () => {
         <Switch defaultChecked checked={active} onChange={ val => setActive(val)} />
       </Form.Item>
       <h4>Please set de custom columns of your catalog</h4>
-      <Form.List name="fields">  
+      <Form.List name="fields" >  
         {
           (fields, {add, remove}, {errors} ) =>(
             <>
@@ -53,6 +71,7 @@ const EditorCatalog = () => {
                     { ...field }
                     label="Field Name"
                     name={[field.name, "fieldName"]}
+                    fieldKey={[field.fieldKey, "fieldName"]}
                     rules={[{ required: true, message:"Missing custom field name" }]}>
                       <Input/>
                     </Form.Item>
@@ -60,6 +79,7 @@ const EditorCatalog = () => {
                      { ...field }
                      label="Data Type"
                      name={[field.name, "dataType"]}
+                     fieldKey={[field.fieldKey, "dataType"]}
                      rules={[{required: true, message: "Missing data type"}]}>
                        <Select 
                           // disabled={!form.getFieldValue("code")} 
@@ -87,9 +107,13 @@ const EditorCatalog = () => {
           )
         }      
       </Form.List>
-      <Button type='primary' htmlType='submit'>
-        Submit
-      </Button>
+      <Row>
+        <Col sm={{ span: 4, offset: 20 }}>
+            <Button type='primary' htmlType='submit'>
+            Submit
+          </Button>
+        </Col>
+      </Row>
     </Form>
   </>
   

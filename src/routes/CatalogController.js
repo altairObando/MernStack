@@ -22,5 +22,13 @@ router.post("/", async(request, response) =>{
     return response.json({status: 200, created: true, data: newCatalog });
 })
 
+router.put("/:id", async(request, response) => {
+    const { params: { id } } = request;
+    const { _id, code, name, isActive, fields } = request.body;
+    const currentCatalog = { _id, code, name, isActive, fields };
+    const result = await catalog.findByIdAndUpdate(id, currentCatalog );
+    return response.json({ status: 200, updated: true, data: result });
+});
+
 
 module.exports = router

@@ -9,6 +9,7 @@ import IndexHome      from './components/Home/IndexHome';
 import BuildBread     from './components/Home/BuildBread';
 import IndexProduct   from './components/Products/IndexProduct';
 import IndexCatalog   from './components/Catalogs/IndexCatalog';
+import GridCatalog    from './components/Catalogs/GridCatalog';
 
 const { Header, Content, Footer } = Layout;
 
@@ -52,6 +53,7 @@ const App = () => {
 
               <Route path='/Products' element={ <IndexProduct />} />
               <Route path='/Catalogs' element={ <IndexCatalog /> } />
+              <Route path='/Catalogs/GridView/:id' element={ <GridCatalog /> } />
             </Routes>
           </Content>
           <Footer style={{ textAlign: 'center' }}>
