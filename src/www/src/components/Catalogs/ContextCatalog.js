@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-export const contextCatalog = React.createContext();
+export const ContextCatalogs = React.createContext();
 
 const columnTypes = [
     { name: "Text",   type: "textColumn" },
@@ -12,9 +12,9 @@ const columnTypes = [
   
 const ContextCatalog = ({children}) => {
     const [ values, setValues ] = useState({ columnTypes });
-    return <contextCatalog.Provider value={{values, setValues}}>
+    return <ContextCatalogs.Provider value={{values, setValues}}>
         { children }
-    </contextCatalog.Provider>
+    </ContextCatalogs.Provider>
 }
 
 export default ContextCatalog

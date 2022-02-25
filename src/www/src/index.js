@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import 'react-datasheet-grid/dist/style.css'
 if(!window.validateGUID){
   window.validateGUID = (GUID) => {
-    let pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    let pattern = /^[0-9a-fA-F]{24}$/;
     return pattern.test(GUID);
   }
 }

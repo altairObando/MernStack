@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Col, Row, Button } from 'antd'
+import { Col, Row, Button, Divider, message } from 'antd'
 import EditorCatalog from './EditorCatalog'
 import ContextCatalog from './ContextCatalog';
 import ListCatalog from './ListCatalog';
@@ -13,9 +13,25 @@ const IndexCatalog = () => {
       setRecord(record);
       setVisible(true);
   }
+  const deleteRecord = (recordId) => {
+    const settings = {
+      method: "DELETE",
+      headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      }
+    }
+    fetch(`/api/Catalogs/${recordId}`, settings)
+    .then(response => response.json())
+    .then(result => result.status === 200 ? message.success("Deleted"): message.error("Error"))
+
+  }
+
+
   return (
     <ContextCatalog>
       <h2>List of catalogs</h2>
+      <Divider/>
       <Row>
         <Col>
         <Button type='primary' 
@@ -26,13 +42,14 @@ const IndexCatalog = () => {
             </Button>
         </Col>
       </Row>
+      <Divider />
       <Row>
-        <Col span={16}>
-          <ListCatalog showModalFn={ showRecord } />
+        <Col span={24}>
+          <ListCatalog showModalFn={ showRecord } deleteFn={ deleteRecord } />
         </Col>
       </Row>
       <Modal width={650} visible={visible} title="Catalog builder" onCancel={ () => setVisible(false)} okButtonProps={{ hidden: true }}>
-        <EditorCatalog catalog={record} />
+        <EditorCatalog catalog={record} hideEditor={ () =>  setVisible(false) } />
       </Modal>
     </ContextCatalog>
   )

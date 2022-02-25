@@ -1,15 +1,15 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Form, Input, Button, Space, Select, message, Switch, Row, Col } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { contextCatalog } from './ContextCatalog';
+import { ContextCatalogs } from './ContextCatalog';
 
 const { Option } = Select;
 
 const EditorCatalog = (props) => {
   const [form] = Form.useForm();
   const [active, setActive] = useState(false);
-  const { values: { columnTypes } } = useContext(contextCatalog);
-  const { catalog: currentCatalog } = props;
+  const { values: { columnTypes, updateCatalogList } } = useContext(ContextCatalogs);
+  const { catalog: currentCatalog, hideEditor } = props;
   const onFinish = async(values) =>{
     try{     
       form.validateFields();
@@ -19,6 +19,7 @@ const EditorCatalog = (props) => {
       }  
       else{
           const { _id : id } = values;
+          values["isActive"] = active;
           const settings = {
             method: id && id != null ? "PUT": "POST",
             headers: {
@@ -43,7 +44,12 @@ const EditorCatalog = (props) => {
     }catch(e){
       console.table(e)
     }
+    if(typeof updateCatalogList === "function")
+      updateCatalogList()
+    if(typeof hideEditor === "function")
+      hideEditor()
   }
+
 
   return <>
     <Form form={form} onFinish={ onFinish } initialValues={ currentCatalog }>
@@ -59,7 +65,7 @@ const EditorCatalog = (props) => {
       <Form.Item  rules={[{ required: false }]} name="isActive" label={  active ? "Active" : "Inactive" }>
         <Switch defaultChecked checked={active} onChange={ val => setActive(val)} />
       </Form.Item>
-      <h4>Please set de custom columns of your catalog</h4>
+      <h4>Please set custom columns of your catalog</h4>
       <Form.List name="fields" >  
         {
           (fields, {add, remove}, {errors} ) =>(

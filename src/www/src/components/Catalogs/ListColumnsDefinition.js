@@ -4,7 +4,7 @@ import { EditOutlined, DeleteOutlined, BuildOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 
-const ListColumnsDefinition = ( showModalFn ) => {
+const ListColumnsDefinition = ( showModalFn, deleteRecord ) => {
     const nav = useNavigate();
 
   return [
@@ -71,8 +71,8 @@ const ListColumnsDefinition = ( showModalFn ) => {
             <Button icon={<BuildOutlined />} onClick={ () => { nav(`/Catalogs/GridView/${record._id}`) }} ></Button>
         </Tooltip>
         <Popconfirm title="Are you sure to delete this product?" onConfirm={ () => { 
-            // list.delete(record._id ) 
-            }} >
+                deleteRecord(record._id ) 
+            }}>
             <Button type='primary' style={{ backgroundColor: 'red', borderColor: 'red'}} icon={ <DeleteOutlined/>  } ></Button>
         </Popconfirm>
         </Space>
