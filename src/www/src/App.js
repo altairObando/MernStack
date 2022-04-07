@@ -10,7 +10,8 @@ import BuildBread     from './components/Home/BuildBread';
 import IndexProduct   from './components/Products/IndexProduct';
 import IndexCatalog   from './components/Catalogs/IndexCatalog';
 import GridCatalog    from './components/Catalogs/GridCatalog';
-
+import FormCredit     from './components/Credit/FormCredit';
+import { Card } from 'antd';
 const { Header, Content, Footer } = Layout;
 
 const App = () => {  
@@ -36,21 +37,19 @@ const App = () => {
     <Layout style={{ minHeight: '100vh' }}>
       <SideBar collapsibleElement={ { collapsed, onCollapse } } />
       <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ height: "auto", padding: 0 }}>
-            {
-              !isRoot ?
-                <PageHeader title={currentModule} onBack={() => navigate(-1) }  />
-              : <h1 style={{ padding: "0 50px"}}>Main Content</h1>
-            }
+          <Header style={{ height: "auto", padding: 0, backgroundColor: "#f0f2f5" }}>
+            <Card style={{ margin: "1.5em" }}>
+              <BuildBread oldPath={currentPath}/>
+              
+            </Card>
           </Header>
-          <Content style={{ padding: '24px', minHeight: 280 }} className="site-layout-background">
-            <BuildBread oldPath={currentPath}/>
+          <Content style={{ padding: '24px', minHeight: 280 }}>            
             <Routes>
               <Route path='/' element={ <IndexHome /> } />
               <Route path="/Contacts" element={ <IndexContacts /> } />
               <Route path='/Contacts/FormContact/' element={ <FormContacts /> } />
               <Route path='/Contacts/FormContact/:id' element={ <FormContacts /> } />
-
+              <Route path='/Credits/FormCredit' element={ <FormCredit />} />
               <Route path='/Products' element={ <IndexProduct />} />
               <Route path='/Catalogs' element={ <IndexCatalog /> } />
               <Route path='/Catalogs/GridView/:id' element={ <GridCatalog /> } />

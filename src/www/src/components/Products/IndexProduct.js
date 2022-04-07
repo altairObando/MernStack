@@ -61,7 +61,7 @@ const IndexProduct = () => {
   }
 
   return <ProductContext.Provider value={{ modal: { visible, setVisible }, detail : { loading, setLoading }, list: { setRecord, showModalWithRecord, delete: onDelete }, form:{ record, onSubmitForm, formDetail, setFormDetail } }}  >
-  <Card bordered style={{ width: '100%', height: "45rem"}} hoverable>
+  <>
     <Row>
       <Col>        
         <Form form={form} layout="inline" onFinish={onSubmitForm}>
@@ -82,7 +82,7 @@ const IndexProduct = () => {
       <ListProduct searchParams={{}} />
       </Col>
     </Row>
-  </Card>
+  </>
     <DetailProduct />
   </ProductContext.Provider>
 }

@@ -1,4 +1,5 @@
-@import '~antd/dist/antd.css';
+@import '~antd/dist/antd.min.css';
+
 /* @import '~react-datasheet-grid/dist/style.css'; */
 .logo {
   height: 32px;
@@ -16,6 +17,7 @@
   left: 0;
   top: 0;
   bottom: 0;
+  background-color: white;
 }
 
 .dynamic-delete-button {

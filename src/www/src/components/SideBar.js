@@ -1,7 +1,7 @@
 import React from 'react'
 import { Layout, Menu } from 'antd';
 import { Outlet, Link } from "react-router-dom";
-import { DesktopOutlined, UserOutlined, FileOutlined, ShopOutlined, SettingOutlined, ToolOutlined } from '@ant-design/icons'
+import { CreditCardOutlined, UserOutlined, FileOutlined, ShopOutlined, SettingOutlined, ToolOutlined } from '@ant-design/icons'
 
 
 const { Sider } = Layout;
@@ -9,14 +9,18 @@ const { SubMenu } = Menu;
 
 const SideBar = (props) => {
     const { collapsibleElement } = props;
-  return <Sider collapsible collapsed={ collapsibleElement.collapsed } onCollapse={ collapsibleElement.onCollapse } className="custom-sider"  >
+  return <Sider 
+          collapsible 
+          collapsed={ collapsibleElement.collapsed } 
+          onCollapse={ collapsibleElement.onCollapse } 
+          className="custom-sider">
   <div className="logo" />
-  <Menu defaultSelectedKeys={['1']} mode='inline' theme='light'>
+  <Menu defaultSelectedKeys={['1']} mode='inline'>
     <Menu.Item key="1" icon={<UserOutlined />}>
       <Link to='/Contacts' className='nav-text'>Contacts</Link>
     </Menu.Item>
-    <Menu.Item key="2" icon={<DesktopOutlined />}>
-      Option 2
+    <Menu.Item key="2" icon={ <CreditCardOutlined />}>
+      <Link to="/Credits/FormCredit" className='nav-text'> Credits </Link>
     </Menu.Item>
     <SubMenu key="sub1" icon={<SettingOutlined />} title="Configuration">
         <Menu.Item key="3" icon={ <ShopOutlined/> }>
